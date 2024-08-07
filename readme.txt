@@ -1,4 +1,4 @@
-id: 321809162
+
 
 host creates dir /tmp/mtacoin and places the mtacoin.config with X difficulty: "DIFFICULTY=X"
 
