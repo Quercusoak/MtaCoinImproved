@@ -3,11 +3,20 @@
 
 #pragma once
 
+#include <iostream>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <string.h>
+#include <syslog.h>
 #include <stdio.h>
 #include "Block.h"
 using namespace std;
 #include <zlib.h>
 #include <stdlib.h> 
+
+#define SERVER_PIPE "/mnt/mta/server_pipe"
+#define LOG_PATH  "/var/log/mtacoin.log"
 
 const int MSG_TYPE_MINER_SUBSCRIPTION = 1;
 const int MSG_TYPE_BLOCK_DATA = 2;

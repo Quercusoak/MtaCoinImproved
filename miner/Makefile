@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -Wall -std=c++11 -static
 LIBS = -lz
 
-SRC = miner.cpp utils.cpp
+SRC = miner.cpp ../utils/utils.cpp
 OBJ = $(SRC:.cpp=.o)
 
 all: miner

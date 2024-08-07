@@ -27,7 +27,7 @@ unsigned int crc32Hash(const BLOCK_T& block)
 
 void printBlockInfo(const BLOCK_T& g_block)
 {
-    printf("height = %d, timestamp = %d, hash = 0x%X, prev_hash = 0x%X, difficulty = %d, nonce = %d, relayed_by = #%d"
+    printf("height = %d, timestamp = %d, hash = 0x%X, prev_hash = 0x%X, difficulty = %d, nonce = %d, relayed_by = #%d\n"
     ,g_block.height, g_block.timestamp, g_block.hash,g_block.prev_hash,g_block.difficulty,g_block.nonce, g_block.relayed_by);
 }
 

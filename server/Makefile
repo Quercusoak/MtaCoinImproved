@@ -4,7 +4,7 @@ LIBS = -lz
 
 EXEC = server
 
-SRC = server.cpp utils.cpp
+SRC = server.cpp ../utils/utils.cpp
 OBJ = $(SRC:.cpp=.o)
 
 all: $(EXEC)

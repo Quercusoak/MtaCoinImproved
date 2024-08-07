@@ -1,17 +1,6 @@
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-#include <syslog.h>
-#include <iostream>
-using namespace std;
 #include <vector>
-#include "utils.h"
 #include <fstream>
-#include <cstdlib> 
-
-#define LOG_PATH  "/var/log/mtacoin.log"
-#define SERVER_PIPE "/mnt/mta/server_pipe"
+#include "../utils/utils.h"
 
 const char* directory = "/mnt/mta";
 const char* config_file_name = "/mnt/mta/mtacoin.config";

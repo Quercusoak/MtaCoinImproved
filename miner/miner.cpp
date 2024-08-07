@@ -1,19 +1,10 @@
-#include <iostream>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <cstring>
-#include <syslog.h>
-using namespace std;
-#include "utils.h"
+#include "../utils/utils.h"
 
-#define LOG_PATH  "/var/log/mtacoin.log"
 #define MINER_PATH "/mnt/mta/miner_pipe_"
-#define SERVER_PIPE "/mnt/mta/server_pipe"
 
 void sendMinerSubscription(int server_fd, const string& miner_pipe_name);
 void sendBlockData(int server_fd, const BLOCK_T& block);
-void mineBlock(BLOCK_T& block, int difficulty, int miner_fd);
+void mineBlock(BLOCK_T& block, int miner_fd);
 
 int miner_id;
 
@@ -55,33 +46,26 @@ int main() {
 
     //c)	Wait on the pipe to receive the first block.
     miner_fd = open(pipe_name.c_str(), O_RDONLY );
-    if (read(miner_fd, &block, sizeof(block)) <= 0) {
-        cerr<<"Didnt recieve a block??"<<endl;                  
-        return 1;
-    }
-
-    printf("Miner #%d recieved first block: ",miner_id);
-    printBlockInfo(block);
 
     srand(time(NULL));
-    int difficulty = block.difficulty;
 
     // d)	Start mining
     for (;;){
-        //mines block and checks if it is relevant
-        mineBlock(block, difficulty, miner_fd); 
-            
-        printf("\nMiner #%d: mined new block #%d with hash: 0x%X and difficulty: %d\n", miner_id, block.height, block.hash, block.difficulty);
-        printBlockInfo(block);
 
-        //sends mined block
-        sendBlockData(server_fd, block);
+        if (read(miner_fd, &block, sizeof(BLOCK_T)) > 0){
         
-        //makes pipe blocking and waites for next block
-        fcntl(miner_fd, F_SETFL,fcntl(miner_fd, F_GETFL) & ~O_NONBLOCK);
-        if (read(miner_fd, &block, sizeof(BLOCK_T))>0){
             printf("Miner #%d recieved block: ",miner_id);
             printBlockInfo(block);
+
+            mineBlock(block, miner_fd); 
+                
+            printf("Miner #%d: mined new block #%d with hash: 0x%X and difficulty: %d\n", miner_id, block.height, block.hash, block.difficulty);
+            // printBlockInfo(block);
+
+            sendBlockData(server_fd, block);
+            
+            //makes pipe blocking and waites for next block
+            fcntl(miner_fd, F_SETFL,fcntl(miner_fd, F_GETFL) & ~O_NONBLOCK);
         }
     }
 
@@ -104,7 +88,7 @@ void sendBlockData(int server_fd, const BLOCK_T& block) {
     write(server_fd, &block, sizeof(block));
 }
 
-void mineBlock(BLOCK_T& block, int difficulty, int miner_fd){ 
+void mineBlock(BLOCK_T& block, int miner_fd){ 
 
     // make pipe non blocking to check if there is a new block
     fcntl(miner_fd, F_SETFL, fcntl(miner_fd, F_GETFL) | O_NONBLOCK);
@@ -122,7 +106,7 @@ void mineBlock(BLOCK_T& block, int difficulty, int miner_fd){
 
         block.hash = crc32Hash(block);
 
-        while (__builtin_clz(block.hash) != difficulty){
+        while (__builtin_clz(block.hash) != block.difficulty){
 
             if (read(miner_fd, &new_block, sizeof(BLOCK_T)) > 0){
 
